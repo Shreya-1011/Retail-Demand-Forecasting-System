@@ -1,0 +1,49 @@
+# Virtual Environment
+
+.venv/
+venv/
+
+
+# Python Cache
+
+**pycache**/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# IDE Files
+
+.vscode/
+.idea/
+
+# Environment Variables
+
+.env
+
+# Streamlit Secrets
+
+.streamlit/secrets.toml
+
+# Logs
+
+*.log
+
+# OS Files
+
+.DS_Store
+Thumbs.db
+
+# Build Files
+
+build/
+dist/
+*.egg-info/
+
+# Temporary Files
+
+*.tmp
+*.temp
