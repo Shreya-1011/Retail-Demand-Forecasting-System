@@ -45,8 +45,9 @@ st.markdown("""
 
     .sub-title {
         text-align: center;
-        color: #8B949E;
+        color: #FFFFFF;
         font-size: 1.05rem;
+        font-weight:500;
         margin-bottom: 1.5rem;
     }
 
@@ -59,7 +60,8 @@ st.markdown("""
     }
 
     div[data-testid="stMetricLabel"] {
-        color: #8B949E;
+        color: #FFFFFF !important;
+        font-weight:600;
     }
 
     div[data-testid="stMetricValue"] {
@@ -74,8 +76,8 @@ st.markdown("""
         background-color: #161B22;
         border-radius: 8px 8px 0 0;
         padding: 10px 24px;
-        color: #8B949E;
-        font-weight: 600;
+        color: #FFFFFF !important;
+        font-weight: 700;
     }
 
     .stTabs [aria-selected="true"] {
@@ -111,7 +113,7 @@ st.markdown("""
 
     .prediction-label {
         font-size: 1.1rem;
-        color: #8B949E;
+        color: #FFFFFF;
         text-transform: uppercase;
         letter-spacing: 3px;
         margin-top: 0.5rem;
@@ -131,13 +133,13 @@ st.markdown("""
     }
 
     .info-card p {
-        color: #C9D1D9;
+        color: #FFFFFF;
         margin: 0;
     }
 
     .footer {
         text-align: center;
-        color: #8B949E;
+        color: #FFFFFF;
         padding: 2rem 0 1rem 0;
         border-top: 1px solid #30363D;
         margin-top: 2rem;
@@ -222,6 +224,12 @@ st.markdown("""
         color: #FFFFFF !important;
         font-weight: 700;
     }
+
+    /* Global bright white text */
+    p, span, label, small, li, .stMarkdown, .stText, .stCaption {
+        color:#FFFFFF !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -403,13 +411,13 @@ with tab1:
     # KPI Cards
     k1, k2, k3, k4 = st.columns(4)
     with k1:
-        st.metric("🔮 Predicted Demand", f"{prediction:.2f} units")
+        st.metric("Predicted Demand", f"{prediction:.2f} units")
     with k2:
-        st.metric("📦 Inventory Level", f"{inventory_level:.0f} units")
+        st.metric("Inventory Level", f"{inventory_level:.0f} units")
     with k3:
-        st.metric("💸 Discount", f"{discount_percent:.1f}%")
+        st.metric("Discount", f"{discount_percent:.1f}%")
     with k4:
-        st.metric("🏷️ Effective Price", f"₹{effective_price:.2f}")
+        st.metric("Effective Price", f"₹{effective_price:.2f}")
 
     st.markdown("")
 
@@ -475,7 +483,7 @@ with tab1:
 # TAB 2 - VISUAL ANALYTICS
 # ============================================================
 with tab2:
-    st.markdown("## 📊 Visual Analytics")
+    st.markdown("## Visual Analytics")
     st.markdown("")
 
     col1, col2 = st.columns(2)
@@ -503,7 +511,7 @@ with tab2:
         fig_bar.update_layout(
             paper_bgcolor="#0E1117",
             plot_bgcolor="#161B22",
-            font_color="#FAFAFA",
+            font_color="#FFFFFF",
             showlegend=False,
             xaxis_title="",
             yaxis_title="Value",
@@ -511,124 +519,54 @@ with tab2:
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
-    # 2. Pie Chart - Feature Contribution Distribution
-    with col2:
-        if artifacts_loaded:
-            try:
-                contributions = np.abs(scaled_input[0] * model.coef_)
-                contrib_df = pd.DataFrame({
-                    "Feature": model_columns,
-                    "Contribution": contributions
-                }).sort_values("Contribution", ascending=False).head(8)
-            except Exception:
-                contrib_df = pd.DataFrame({
-                    "Feature": ["Lag Demand", "7-Day Avg", "Price", "Inventory",
-                                 "Discount", "Seasonality", "Festival", "Category"],
-                    "Contribution": [25, 20, 15, 12, 10, 8, 6, 4]
-                })
-        else:
-            contrib_df = pd.DataFrame({
-                "Feature": ["Lag Demand", "7-Day Avg", "Price", "Inventory",
-                             "Discount", "Seasonality", "Festival", "Category"],
-                "Contribution": [25, 20, 15, 12, 10, 8, 6, 4]
-            })
-
-        fig_pie = px.pie(
-            contrib_df,
-            names="Feature",
-            values="Contribution",
-            hole=0.45,
-            color_discrete_sequence=px.colors.sequential.Aggrnyl,
-            title="🥧 Feature Contribution Distribution"
-        )
-        fig_pie.update_layout(
-            paper_bgcolor="#0E1117",
-            plot_bgcolor="#0E1117",
-            font_color="#FAFAFA",
-            height=420
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
-
-    st.markdown("---")
-
-    # 3. Radar Chart
-    radar_categories = ["Demand History", "Pricing", "Inventory", "Seasonality", "Promotion"]
-
-    demand_history_score = min((units_sold_lag_1 + units_sold_roll_mean_7) / 2, 100)
-    pricing_score = min(effective_price / 10, 100)
-    inventory_score = min(inventory_level / 10, 100)
-    seasonality_score = (month_cos + 1) * 50
-    promotion_score = min(discount_percent + (festival_flag * 20), 100)
-
-    radar_values = [
-        demand_history_score, pricing_score, inventory_score,
-        seasonality_score, promotion_score
-    ]
-
-    fig_radar = go.Figure()
-    fig_radar.add_trace(go.Scatterpolar(
-        r=radar_values + [radar_values[0]],
-        theta=radar_categories + [radar_categories[0]],
-        fill="toself",
-        line_color="#00D4FF",
-        fillcolor="rgba(0, 212, 255, 0.30)",
-        name="Current Inputs"
-    ))
-    fig_radar.update_layout(
-        polar=dict(
-            bgcolor="#161B22",
-            radialaxis=dict(visible=True, range=[0, 100], color="#8B949E"),
-            angularaxis=dict(color="#FAFAFA")
-        ),
-        paper_bgcolor="#0E1117",
-        font_color="#FAFAFA",
-        title="🕸️ Feature Profile Radar",
-        showlegend=False,
-        height=450
-    )
-    st.plotly_chart(fig_radar, use_container_width=True)
 
 # ============================================================
 # TAB 3 - MODEL INSIGHTS
 # ============================================================
 with tab3:
-    st.markdown("## 🤖 Model Insights")
+    st.markdown("## Model Insights")
     st.markdown("")
 
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.metric("🧠 Model", "Linear Regression")
-    with m2:
-        st.metric("⚙️ Scaler", "StandardScaler")
-    with m3:
-        st.metric("🎯 Training R²", "0.999")
-    with m4:
-        st.metric("📉 MAE", "0.13")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Model", "Linear Regression")
+
+    with col2:
+        st.metric("Scaler", "StandardScaler")
+
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.metric("R² Score", "0.999")
+
+    with col4:
+        st.metric("MAE", "0.13")
 
     st.markdown("---")
-    st.markdown("### 💡 Why Demand Prediction Matters")
+    st.markdown("### Why Demand Prediction Matters")
 
     st.markdown("""
     <div class="info-card">
-        <h4>📦 Inventory Optimization</h4>
+        <h4>Inventory Optimization</h4>
         <p>Accurate demand forecasts help maintain optimal stock levels — reducing both
         overstock costs and stockout risks, ensuring products are available when customers need them.</p>
     </div>
 
     <div class="info-card">
-        <h4>💸 Promotion Planning</h4>
+        <h4>Promotion Planning</h4>
         <p>Understanding how discounts and festival windows influence demand allows
         businesses to design promotions that maximize sales without eroding margins.</p>
     </div>
 
     <div class="info-card">
-        <h4>📊 Business Decision Making</h4>
+        <h4>Business Decision Making</h4>
         <p>Reliable forecasts support smarter procurement, staffing, and supply chain
         decisions — turning historical sales data into forward-looking strategy.</p>
     </div>
 
     <div class="info-card">
-        <h4>🚀 Benefits of Forecasting</h4>
+        <h4>Benefits of Forecasting</h4>
         <p>Forecasting reduces waste, improves cash flow, strengthens supplier negotiations,
         and increases customer satisfaction through consistent product availability.</p>
     </div>
