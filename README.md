@@ -6,6 +6,13 @@ The system helps retailers make data-driven decisions regarding inventory manage
 
 ---
 
+# 🌐 Live Demo
+
+🚀 **Try the application here**
+
+https://retail-demand-forecasting-system-31a1.onrender.com
+
+
 ## 🚀 Project Overview
 
 Retail businesses often face challenges such as:
@@ -134,8 +141,6 @@ Performance:
 
 - Demand Gauge Chart
 - Feature Analysis
-- Radar Charts
-- Business Insights
 
 ### Model Insights
 
@@ -184,10 +189,6 @@ Retail-Demand-Forecasting-System/
 
 - Scikit-Learn
 
-### Model Deployment
-
-- Streamlit
-
 ### Visualization
 
 - Plotly
@@ -197,6 +198,13 @@ Retail-Demand-Forecasting-System/
 ### Model Persistence
 
 - Joblib
+
+### UI 
+- streamlit
+
+### Deployment
+
+- Render
 
 ---
 
